@@ -46,14 +46,6 @@ function addBorrowController($data){
         ];
     }
 
-    if($data["return_date"] < $data["date"]){
-
-        return[
-        "status" => 400,
-        "message" => "return date should be greater than borrowing date"
-        ];
-    }
-
 
     //CHECK IF THE BOOK EXISTS
 
@@ -137,5 +129,64 @@ function deleteBorrowController($id){
     return[
     "status"=>200,
     "message"=>"deleted succefully"
+    ];
+}
+
+function updateBorrowController($id,$data){
+
+    
+    if(!is_numeric($id)){
+
+        return [
+            "status"=>400,
+            "message" => "invalid id"
+            ];
+    }
+
+    if(empty($data["user_id"]) || empty($data["book_id"]) || empty($data["date"]) || empty($data["return_date"])
+        || empty($data["status"]))
+    {
+        return [
+            "status"=>400,
+            "message"=>"fields are required"
+        ];
+    }
+
+    //CHECK IF THE BOOK EXISTS
+
+    $checkBook = getBookById($data["book_id"]);
+
+    if(!$checkBook){
+
+        return[
+        "status"=>404,
+        "message"=>"book not found"
+        ];
+    }
+
+    //CHECK IF THE USER EXISTS
+
+    $checkUser = getUserById($data["user_id"]);
+
+    if(!$checkUser){
+
+        return[
+        "status"=>404,
+        "message"=>"user not found"
+        ];
+    }
+
+    $res = updateBorrow($id,$data);
+
+    if(!$res){
+        return[
+            "status"=>500,
+            "message"=>"server error"
+        ];
+    }
+
+    return[
+        "status"=>200,
+        "message"=>"updated succefully"
     ];
 }
